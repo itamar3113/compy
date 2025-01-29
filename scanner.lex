@@ -10,15 +10,43 @@
 %option noyywrap
 digit   		([0-9])
 letter  		([a-zA-Z])
-whitespace		([\t\n ])
-
+whitespace		([\t\n\r ])
+relop           (==|!=|<|<=|>=)
+binop           (\+|\-|\*|\/)
+comment         (\/\/[^\n\r]*)
+id              ({letter}({letter}|{digit})*)
+num             (0|([1-9]{digit}*))
+hexa            (\\x[0-9a-fA-F]+) 
+escapes         (\\\\|\\\"|\\n|\\r|\\t|\\0|{hexa})
+string          (\"([^\n\r\\\"]|{escapes})*)\"
 %%
-
-{digit}+          			return NUM;
-{letter}+					return WORD;
-{letter}+@{letter}+\.com	return EMAIL;
-{whitespace}				;
-.		printf("Lex doesn't know what that is!\n");
+void      return VOID;
+int       return INT;
+byte      return BYTE;
+bool      return BOOL;
+and       return AND;
+or        return OR;
+not       return NOT;
+true      return TRUE;
+false     return FALSE;
+return    return RETURN;
+if        return IF;
+else      return ELSE;
+while     return WHILE;
+break     return BREAK;
+continue  return CONTINUE;
+;         return SC;
+,         return COMMA;
+\(        return LPAREN;
+\)        return RPAREN;
+=         return ASSIGN;
+{relop}   return RELOP;
+{binop}   return BINOP;
+{comment} return COMMENT;
+{id}      return ID;
+{num}     return NUM;
+{num}b    return NUM_B;
+{string}  return STRING:
 
 %%
 
