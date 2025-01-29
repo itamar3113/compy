@@ -16,9 +16,12 @@ binop           (\+|\-|\*|\/)
 comment         (\/\/[^\n\r]*)
 id              ({letter}({letter}|{digit})*)
 num             (0|([1-9]{digit}*))
-hexa            (\\x[0-9a-fA-F]+) 
+hexa            (\\x[0-9a-fA-F][0-9a-fA-F]) 
 escapes         (\\\\|\\\"|\\n|\\r|\\t|\\0|{hexa})
-string          (\"([^\n\r\\\"]|{escapes})*)\"
+unclosed_string (\"([^\n\r\\\"]|{escapes})*)
+unopen_string   (([^\n\r\\\"]|{escapes})*\")
+string          ({unclosed_string}\")
+undef_escape    ({unclosed_string}\\[^ntr0"]{unopen_string})
 %%
 void      return VOID;
 int       return INT;
@@ -47,6 +50,7 @@ continue  return CONTINUE;
 {num}     return NUM;
 {num}b    return NUM_B;
 {string}  return STRING:
+{unclosed_string} return UNCLOSED_STRING;
 
 %%
 
