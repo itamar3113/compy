@@ -38,11 +38,6 @@ void output::printToken(int lineno, enum tokentype token, const char *value) {
     if (token == COMMENT) {
         std::cout << lineno << " COMMENT //" << std::endl;
     }
-    else if (token == STRING)
-    {
-        printString()
-    }
-    
      else {
         std::cout << lineno << " " << token_names[token] << " " << value << std::endl;
     }

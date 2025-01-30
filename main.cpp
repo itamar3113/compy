@@ -22,6 +22,7 @@ bool isPrintable(char c1, char c2)
 
 char *handleUndef(char *text, int len)
 {
+    char* res = new char[4];
     for (int i = 0; i < len; i++)
     {
         if (text[i] == '\\')
@@ -29,35 +30,43 @@ char *handleUndef(char *text, int len)
             char next = text[i + 1];
             if (next != '\\' && next != 'n' && next != 'r' && next != 't' && next != '0' && next != 'x')
             {
-                char res[2] = {next, '\0'};
+                res[0] = next;
+                res[1] = '\0';
                 return res;
             }
             else if (next == 'x')
             {
                 if (text[i + 2] == '\"')
                 {
-                    char res[2] = {next, '\0'};
+                    res[0] = next;
+                    res[1] = '\0';
                     return res;
                 }
                 else if (text[i + 3] == '\"')
                 {
-                    char res[3] = {next, text[i + 2], '\0'};
+                    res[0] = next;
+                    res[1] = text[i + 2];
+                    res[2] = '\0';
                     return res;
                 }
                 else if (!isPrintable(text[i + 2], text[i + 3]))
                 {
-                    char res[4] = {next, text[i + 2], text[i + 3], '\0'};
+                    res[0] = next;
+                    res[1] = text[i + 2];
+                    res[2] = text[i + 3];
+                    res[3] = '\0';
                     return res;
                 }
             }
         }
     }
+    return nullptr;
 }
 
 void printString(int lineo, char *text, int len)
 {
     std::ostringstream res;
-    for (int i = 2; i < len - 2; i++)
+    for (int i = 1; i < len - 1; i++)
     {
         if (text[i] == '\\')
         {
