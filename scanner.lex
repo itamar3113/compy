@@ -11,7 +11,7 @@
 digit   		([0-9])
 letter  		([a-zA-Z])
 whitespace		([\t\n\r ])
-relop           (==|!=|<|<=|>=)
+relop           (==|!=|<|>|<=|>=)
 binop           (\+|\-|\*|\/)
 comment         (\/\/[^\n\r]*)
 id              ({letter}({letter}|{digit})*)

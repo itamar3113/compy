@@ -82,7 +82,17 @@ void printString(int lineo, char *text, int len)
             else if (next == '\\')
                 res << '\\';
             else if (next == '"')
+            {
+                if (i + 1 == len - 1)
+                {
+                    output::errorUnclosedString();
+                }
                 res << '"';
+            }
+            else if (next == '0')
+            {
+                break;
+            }
             else if (next == 'x')
             {
                 if (i + 2 == len - 1)
