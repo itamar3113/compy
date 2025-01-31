@@ -16,13 +16,14 @@ bool isPrintable(char c1, char c2)
     {
         return false;
     }
-    unsigned short value = (unsigned char)c1 << 8 | (unsigned char)c2;
-    return (value >= 0x20 && value <= 0x7E);
+    char hexString[3] = {c1, c2, '\0'};
+    int asciiValue = (int)strtol(hexString, NULL, 16);
+    return (asciiValue >= 0x20 && asciiValue <= 0x7E);
 }
 
 char *handleUndef(char *text, int len)
 {
-    char* res = new char[4];
+    char *res = new char[4];
     for (int i = 0; i < len; i++)
     {
         if (text[i] == '\\')
@@ -65,6 +66,7 @@ char *handleUndef(char *text, int len)
 
 void printString(int lineo, char *text, int len)
 {
+    char *err = new char[4];
     std::ostringstream res;
     for (int i = 1; i < len - 1; i++)
     {
@@ -76,17 +78,46 @@ void printString(int lineo, char *text, int len)
             else if (next == 'r')
                 res << '\r';
             else if (next == 't')
-                res << '\r';
+                res << '\t';
             else if (next == '\\')
                 res << '\\';
             else if (next == '"')
                 res << '"';
             else if (next == 'x')
             {
-                int val = text[i + 2];
-                char hexa_char = (val << 4) | text[i + 3];
-                res << hexa_char;
+                if (i + 2 == len - 1)
+                {
+                    err[0] = next;
+                    err[1] = '\0';
+                    output::errorUndefinedEscape(err);
+                }
+                if (i + 3 == len - 1)
+                {
+                    err[0] = next;
+                    err[1] = text[i + 2];
+                    err[2] = '\0';
+                    output::errorUndefinedEscape(err);
+                }
+                if (!isPrintable(text[i + 2], text[i + 3]))
+                {
+                    err[0] = next;
+                    err[1] = text[i + 2];
+                    err[2] = text[i + 3];
+                    err[3] = '\0';
+                    output::errorUndefinedEscape(err);
+                }
+                char hexString[3] = {text[i + 2], text[i + 3], '\0'};
+                int asciiValue = (int)strtol(hexString, NULL, 16);
+                res << char(asciiValue);
+                i += 2;
             }
+            else
+            {
+                err[0] = next;
+                err[1] = '\0';
+                output::errorUndefinedEscape(err);
+            }
+            i++;
         }
         else
         {
@@ -94,6 +125,7 @@ void printString(int lineo, char *text, int len)
         }
     }
     std::cout << lineo << " STRING " << res.str() << std::endl;
+    delete err;
 }
 
 int main()
@@ -107,9 +139,6 @@ int main()
         {
         case UNKNOWN_CHAR:
             output::errorUnknownChar(yytext[0]);
-
-        case UNDEFINED_ESCAPE:
-            output::errorUndefinedEscape(handleUndef(yytext, yyleng));
 
         case UNCLOSED_STRING:
             output::errorUnclosedString();

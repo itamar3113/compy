@@ -55,5 +55,6 @@ void output::errorUnclosedString() {
 
 void output::errorUndefinedEscape(const char *sequence) {
     std::cout << "ERROR: Undefined escape sequence " << sequence << std::endl;
+    delete sequence;
     exit(0);
 }

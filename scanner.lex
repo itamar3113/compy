@@ -18,7 +18,7 @@ id              ({letter}({letter}|{digit})*)
 num             (0|([1-9]{digit}*))
 hexa            ([\\x20-\\x7E])
 escapes         (\\\\|\\\"|\\n|\\r|\\t|\\0|{hexa})
-unclosed_string (\"([^\n\r\\\"]*|[^\n\r\\\"]+([^\n\r\\\"]|{escapes})))
+unclosed_string (\"([^\n\r\"\\]|{escapes})*)
 unopen_string   (([^\n\r\\\"]|{escapes})*\")
 string          ({unclosed_string}\")
 undef_escape    ({unclosed_string}\\([^ntr0"]|x))
@@ -43,6 +43,8 @@ continue  return CONTINUE;
 ,         return COMMA;
 \(        return LPAREN;
 \)        return RPAREN;
+\{        return LBRACE;
+\}        return RBRACE;
 =         return ASSIGN;
 {relop}   return RELOP;
 {binop}   return BINOP;
