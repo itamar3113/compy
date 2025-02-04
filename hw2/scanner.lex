@@ -3,7 +3,8 @@
 /* Declarations section */
 #include <stdio.h>
 #include "nodes.hpp"
-
+#include "parser.tab.h"
+#include "output.hpp"
 %}
 
 %option yylineno
@@ -46,14 +47,23 @@ continue  return CONTINUE;
 \{        return LBRACE;
 \}        return RBRACE;
 =         return ASSIGN;
-{relop}   return RELOP;
-{binop}   return BINOP;
-{comment} return COMMENT;
-{id}      return ID;
-{num}     return NUM;
-{num}b    return NUM_B;
-{string}  return STRING;
+\+        return PLUS; 
+\-        return MINUS; 
+\*        return TIMES; 
+\/        return DIVIDE;
+\<         return LT_OP; 
+\>         return GT_OP;
+"=="      return EQ_OP;
+"!="      return NE_OP;
+"<="      return LE_OP;
+">="      return GE_OP;
+{id}      {yylval = std::make_shared<ast::ID>(yytext); return ID; } 
+{num}     {yylval = std::make_shared<ast::Num>(yytext); return NUM; }
+{num}b    {yylval = std::make_shared<ast::NumB>(yytext); return NUMB; }
+{string}  {yylval = std::make_shared<ast::String>(yytext); return STRING; }
 {whitespace} ;
-{any}     return UNKNOWN_CHAR;
+{any}     {output::errorLex(yylineno);
+            exit(0);
+          };
 %%
 
