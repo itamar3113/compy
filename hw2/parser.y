@@ -18,11 +18,11 @@ using namespace std;
 %}
 
 //Tokens
-%token <ast::ID> ID
-%token <ast::Num> NUM
-%token <ast::NumB> NUMB
-%token <ast::String> STRING
-%token <ast::Bool> TRUE FALSE
+%token  ID
+%token  NUM
+%token  NUMB
+%token  STRING
+%token  TRUE FALSE
 %token VOID INT BYTE BOOL
 %token RETURN IF ELSE WHILE BREAK CONTINUE
 %token SC COMMA LBRACE RBRACE LPAREN RPAREN
@@ -32,6 +32,7 @@ using namespace std;
 %token NOT
 %token EQ_OP NE_OP LT_OP GT_OP LE_OP GE_OP
 %token ASSIGN
+
 
 // Precedence
 %right ASSIGN
@@ -44,7 +45,7 @@ using namespace std;
 %right NOT
 %right ELSE
 
-
+%%
 // While reducing the start variable, set the root of the AST
 Program:  Funcs { program = $1; }
 ;
@@ -59,8 +60,8 @@ FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE
         dynamic_pointer_cast<ast::Formals>($4),
         dynamic_pointer_cast<ast::Statements>($7)); };
 
-RetType: Type {$$ = dynamic_pointer_cast<ast::Type>($1); } |
-	 {$$ = make_shared<ast::Type(ast::BuiltInType::VOID);};
+RetType: Type {$$ = std::dynamic_pointer_cast<ast::Type>($1);}
+    |    VOID {$$=std::make_shared<ast::Type>(ast::BuiltInType::VOID);};
 
 Formals: { $$ = std::make_shared<ast::Formals>(); } | 
 	 FormalsList 
@@ -71,7 +72,7 @@ FormalsList: FormalDecl
 	     FormalDecl COMMA FormalsList
 	     { auto formals = dynamic_pointer_cast<ast::Formals>($3);
             formals->push_front(dynamic_pointer_cast<ast::Formal>($1));
-             $$ = formals };
+             $$ = formals; };
 
 FormalDecl: Type ID
 	    { $$ = make_shared<ast::Formal>(dynamic_pointer_cast<ast::ID>($2), dynamic_pointer_cast<ast::Type>($1)); };
@@ -119,7 +120,7 @@ Call: ID LPAREN ExpList RPAREN
       { $$ = make_shared<ast::Call>(dynamic_pointer_cast<ast::ID>($1),
       dynamic_pointer_cast<ast::ExpList>($3)); } |
       ID LPAREN RPAREN
-      { $$ = make_shared::Call>(dynamic_pointer_cast<ast::ID>($1)); };
+      { $$ = make_shared<ast::Call>(dynamic_pointer_cast<ast::ID>($1)); };
 
 ExpList: Exp
 	 { $$ = make_shared<ast::ExpList>(dynamic_pointer_cast<ast::Exp>($1)); } |

@@ -62,6 +62,7 @@ continue  return CONTINUE;
 {num}b    {yylval = std::make_shared<ast::NumB>(yytext); return NUMB; }
 {string}  {yylval = std::make_shared<ast::String>(yytext); return STRING; }
 {whitespace} ;
+\/\/[^\n\r]* ;
 {any}     {output::errorLex(yylineno);
             exit(0);
           };
